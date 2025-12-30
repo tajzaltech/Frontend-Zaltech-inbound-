@@ -6,7 +6,7 @@ const mockLeads: Lead[] = [
         name: 'John Smith',
         phone: '+1234567890',
         status: 'FOLLOW_UP',
-        serviceInterest: 'Haircut',
+        serviceInterest: 'ChatBot',
         lastCallAt: new Date(Date.now() - 120000),
         createdAt: new Date(Date.now() - 86400000),
     },

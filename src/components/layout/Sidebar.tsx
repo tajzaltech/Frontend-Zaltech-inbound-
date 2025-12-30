@@ -1,51 +1,71 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Phone, History, Users, Package, LogOut } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-
-const menuItems = [
-    { path: '/calls/live', label: 'Calls (Live)', icon: Phone },
-    { path: '/calls/history', label: 'Call History', icon: History },
-    { path: '/leads', label: 'Leads', icon: Users },
-    { path: '/services', label: 'Services', icon: Package },
-];
+import { useUIStore } from '../../store/uiStore';
+import {
+    LayoutDashboard,
+    History,
+    Users,
+    Box,
+    LogOut,
+    X
+} from 'lucide-react';
+import { clsx } from 'clsx';
 
 export function Sidebar() {
     const navigate = useNavigate();
+    const location = useLocation();
     const logout = useAuthStore((state) => state.logout);
+    const { isSidebarOpen, closeSidebar } = useUIStore();
 
     const handleLogout = () => {
         logout();
         navigate('/signin');
     };
 
-    return (
-        <div className="w-64 h-screen bg-white border-r border-gray-100 flex flex-col shadow-[4px_0_24px_rgb(0,0,0,0.02)] z-10">
-            <div className="p-6 border-b border-gray-100/50">
-                <img src="/assets/logo.png" alt="Zaltech.ai" className="h-9 w-auto mb-1" />
-                <p className="text-[11px] font-semibold text-gray-400 tracking-[0.2em] uppercase mb-3">AI Voice Assistant</p>
+    const navItems = [
+        { icon: LayoutDashboard, label: 'Calls (Live)', path: '/calls/live' },
+        { icon: History, label: 'Call History', path: '/calls/history' },
+        { icon: Users, label: 'Leads', path: '/leads' },
+        { icon: Box, label: 'Services', path: '/services' },
+    ];
+
+    const SidebarContent = () => (
+        <div className="flex flex-col h-full bg-white border-r border-gray-100 shadow-[4px_0_24px_rgb(0,0,0,0.02)]">
+            <div className="p-6 border-b border-gray-100/50 flex items-center justify-between">
+                <div>
+                    <img src="/assets/logo.png" alt="Zaltech.ai" className="h-8 w-auto mb-1.5" />
+                    <p className="text-[10px] font-semibold text-gray-400 tracking-[0.2em] uppercase">AI Voice Assistant</p>
+                </div>
+
+                {/* Mobile Close Button */}
+                <button
+                    onClick={closeSidebar}
+                    className="lg:hidden p-2 text-gray-400 hover:bg-gray-50 rounded-lg"
+                >
+                    <X className="w-5 h-5" />
+                </button>
             </div>
 
-            <nav className="flex-1 p-4 space-y-1">
-                {menuItems.map((item) => {
-                    const Icon = item.icon;
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                {navItems.map((item) => {
+                    const isActive = location.pathname.startsWith(item.path);
                     return (
-                        <NavLink
+                        <button
                             key={item.path}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                `flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${isActive
-                                    ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg shadow-gray-900/10'
-                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                                }`
-                            }
-                        >
-                            {({ isActive }) => (
-                                <>
-                                    <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`} />
-                                    <span className="text-[14px] font-medium">{item.label}</span>
-                                </>
+                            onClick={() => {
+                                navigate(item.path);
+                                closeSidebar();
+                            }}
+                            className={clsx(
+                                'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
+                                isActive
+                                    ? 'bg-[linear-gradient(90deg,#525252_0%,#9D1111_100%)] text-white shadow-md shadow-red-900/10'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                             )}
-                        </NavLink>
+                        >
+                            <item.icon className={clsx('w-5 h-5 shrink-0', isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600')} />
+                            <span>{item.label}</span>
+                        </button>
                     );
                 })}
             </nav>
@@ -53,12 +73,37 @@ export function Sidebar() {
             <div className="p-4 border-t border-gray-100">
                 <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-3.5 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-xl w-full transition-all duration-200 group"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors group"
                 >
-                    <LogOut className="w-5 h-5 group-hover:text-red-500 transition-colors" />
-                    <span className="text-sm font-medium">Sign Out</span>
+                    <LogOut className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
+                    Sign Out
                 </button>
             </div>
         </div>
+    );
+
+    return (
+        <>
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block w-64 h-full shrink-0 z-20">
+                <SidebarContent />
+            </div>
+
+            {/* Mobile Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden animate-in fade-in duration-200"
+                    onClick={closeSidebar}
+                />
+            )}
+
+            {/* Mobile Sidebar Drawer */}
+            <div className={clsx(
+                "fixed inset-y-0 left-0 w-72 bg-white z-40 lg:hidden transition-transform duration-300 ease-in-out shadow-2xl",
+                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            )}>
+                <SidebarContent />
+            </div>
+        </>
     );
 }

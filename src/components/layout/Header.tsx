@@ -1,5 +1,6 @@
-import { Bell, Search, Mail, Calendar } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 import { useNotificationStore } from '../../store/notificationStore';
+import { useUIStore } from '../../store/uiStore';
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -10,12 +11,19 @@ interface HeaderProps {
 
 export function Header({ title, actions }: HeaderProps) {
     const { notifications, unreadCount, markAllAsRead } = useNotificationStore();
+    const { toggleSidebar } = useUIStore();
     const [showNotifications, setShowNotifications] = useState(false);
 
     return (
-        <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 py-5 flex items-center justify-between sticky top-0 z-20">
-            <div className="flex items-center gap-8">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{title}</h1>
+        <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 lg:px-8 py-4 lg:py-5 flex items-center justify-between sticky top-0 z-20">
+            <div className="flex items-center gap-3 lg:gap-8">
+                <button
+                    onClick={toggleSidebar}
+                    className="lg:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
+                <h1 className="text-xl lg:text-2xl font-bold text-gray-900 tracking-tight truncate">{title}</h1>
             </div>
 
             <div className="flex items-center gap-6">
@@ -65,8 +73,8 @@ export function Header({ title, actions }: HeaderProps) {
                                                     >
                                                         <div className="flex gap-3">
                                                             <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${notification.type === 'warning' ? 'bg-orange-400' :
-                                                                    notification.type === 'success' ? 'bg-green-400' :
-                                                                        notification.type === 'error' ? 'bg-red-400' : 'bg-blue-400'
+                                                                notification.type === 'success' ? 'bg-green-400' :
+                                                                    notification.type === 'error' ? 'bg-red-400' : 'bg-blue-400'
                                                                 }`}></div>
                                                             <div>
                                                                 <h4 className="text-sm font-medium text-gray-900 mb-0.5">{notification.title}</h4>

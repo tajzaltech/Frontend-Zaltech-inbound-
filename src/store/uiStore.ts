@@ -5,6 +5,9 @@ interface UIState {
     toggleSidebar: () => void;
     closeSidebar: () => void;
     openSidebar: () => void;
+
+    isSidebarCollapsed: boolean;
+    toggleSidebarCollapsed: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -12,4 +15,7 @@ export const useUIStore = create<UIState>((set) => ({
     toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
     closeSidebar: () => set({ isSidebarOpen: false }),
     openSidebar: () => set({ isSidebarOpen: true }),
+
+    isSidebarCollapsed: false,
+    toggleSidebarCollapsed: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
 }));
