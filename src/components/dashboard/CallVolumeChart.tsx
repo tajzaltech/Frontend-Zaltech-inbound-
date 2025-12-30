@@ -39,8 +39,8 @@ export function CallVolumeChart() {
                 </div>
             </div>
 
-            <div className="relative h-[200px] w-full overflow-x-auto custom-scrollbar">
-                <div className="min-w-[600px] h-full flex items-end justify-between px-2 pb-6">
+            <div className="relative h-[200px] w-full overflow-hidden">
+                <div className="w-full h-full flex items-end justify-between px-2 pb-6">
                     {data.map((item, index) => {
                         const height = (item.calls / maxCalls) * chartHeight;
 
