@@ -135,39 +135,12 @@ export function Services() {
                         </div>
                     )}
 
-                    <div className="grid gap-4">
+                    {/* Services Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {services.map((service) => (
-                            <div key={service.id} className="card hover:shadow-md transition-shadow duration-200">
-                                <div className="flex items-start justify-between gap-4">
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 mt-1">
-                                            <Package className="w-5 h-5 text-gray-400" />
-                                        </div>
-
-                                        <div>
-                                            {editingId === service.id ? (
-                                                <h4 className="text-lg font-semibold text-gray-900 mb-1">{service.name} (Editing...)</h4>
-                                            ) : (
-                                                <>
-                                                    <h4 className="text-lg font-semibold text-gray-900 mb-1">{service.name}</h4>
-                                                    <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">{service.description}</p>
-                                                </>
-                                            )}
-
-                                            <div className="mt-3 flex items-center gap-3">
-                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${service.active
-                                                        ? 'bg-green-50 text-green-700 border-green-100'
-                                                        : 'bg-gray-50 text-gray-600 border-gray-100'
-                                                    }`}>
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${service.active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                                                    {service.active ? 'Active' : 'Inactive'}
-                                                </span>
-                                                <span className="text-xs text-gray-400">ID: {service.id}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
+                            <div key={service.id} className="group card hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border-t-4 border-t-transparent hover:border-t-red-600 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex gap-2">
                                         <button
                                             onClick={() => {
                                                 setEditingId(service.id);
@@ -175,10 +148,9 @@ export function Services() {
                                                 setIsAdding(true);
                                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                             }}
-                                            className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-                                            title="Edit Service"
+                                            className="p-1.5 bg-white text-gray-400 hover:text-blue-600 shadow-sm rounded-lg border border-gray-100"
                                         >
-                                            <Edit2 className="w-4 h-4" />
+                                            <Edit2 className="w-3.5 h-3.5" />
                                         </button>
                                         <button
                                             onClick={() => {
@@ -186,15 +158,53 @@ export function Services() {
                                                     deleteMutation.mutate(service.id);
                                                 }
                                             }}
-                                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Delete Service"
+                                            className="p-1.5 bg-white text-gray-400 hover:text-red-600 shadow-sm rounded-lg border border-gray-100"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
                                 </div>
+
+                                <div className="mb-4">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                        <Package className="w-6 h-6 text-red-600" />
+                                    </div>
+
+                                    {editingId === service.id ? (
+                                        <h4 className="text-xl font-bold text-gray-900 mb-2">{service.name} (Editing...)</h4>
+                                    ) : (
+                                        <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">{service.name}</h4>
+                                    )}
+
+                                    <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 mb-4 min-h-[60px]">
+                                        {service.description}
+                                    </p>
+                                </div>
+
+                                <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${service.active
+                                        ? 'bg-green-50 text-green-700'
+                                        : 'bg-gray-50 text-gray-600'
+                                        }`}>
+                                        <div className={`w-1.5 h-1.5 rounded-full ${service.active ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                                        {service.active ? 'Active' : 'Inactive'}
+                                    </span>
+                                    <span className="text-xs font-mono text-gray-400">#{service.id.split('-')[1]}</span>
+                                </div>
                             </div>
                         ))}
+
+                        {/* Empty State / Add New Placeholder */}
+                        <div
+                            onClick={() => setIsAdding(true)}
+                            className="border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-red-300 hover:bg-red-50/30 transition-all group min-h-[200px]"
+                        >
+                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-red-100 transition-colors">
+                                <Plus className="w-6 h-6 text-gray-400 group-hover:text-red-600" />
+                            </div>
+                            <h4 className="font-semibold text-gray-900 group-hover:text-red-700">Add New Service</h4>
+                            <p className="text-xs text-gray-500 mt-1">Create a new service offering</p>
+                        </div>
                     </div>
                 </div>
             </div>

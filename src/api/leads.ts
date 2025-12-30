@@ -15,7 +15,7 @@ const mockLeads: Lead[] = [
         name: 'Jane Doe',
         phone: '+1111111111',
         status: 'BOOKED',
-        serviceInterest: 'Massage',
+        serviceInterest: 'AI Consulting',
         lastCallAt: new Date(Date.now() - 3600000),
         createdAt: new Date(Date.now() - 172800000),
     },

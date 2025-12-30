@@ -9,6 +9,7 @@ import { CallHistory } from './pages/CallHistory/CallHistory';
 import { Leads } from './pages/Leads/Leads';
 import { LeadDetail } from './pages/LeadDetail/LeadDetail';
 import { Services } from './pages/Services/Services';
+import { Settings } from './pages/Settings/Settings';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -107,6 +108,17 @@ function App() {
               <ProtectedRoute>
                 <AppLayout>
                   <Services />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Settings />
                 </AppLayout>
               </ProtectedRoute>
             }

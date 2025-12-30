@@ -7,7 +7,8 @@ import {
     Users,
     Box,
     LogOut,
-    X
+    X,
+    Settings as SettingsIcon
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -27,6 +28,7 @@ export function Sidebar() {
         { icon: History, label: 'Call History', path: '/calls/history' },
         { icon: Users, label: 'Leads', path: '/leads' },
         { icon: Box, label: 'Services', path: '/services' },
+        { icon: SettingsIcon, label: 'Settings', path: '/settings' },
     ];
 
     const SidebarContent = () => (
