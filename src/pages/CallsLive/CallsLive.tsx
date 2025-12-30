@@ -4,6 +4,7 @@ import { callsApi } from '../../api/calls';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { StatsOverview } from '../../components/dashboard/StatsOverview';
+import { CallVolumeChart } from '../../components/dashboard/CallVolumeChart';
 import { Phone, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -39,6 +40,7 @@ export function CallsLive() {
 
             <div className="flex-1 p-4 lg:p-8 overflow-auto">
                 <StatsOverview />
+                <CallVolumeChart />
 
                 {calls.length === 0 ? (
                     <div className="card text-center py-16 flex flex-col items-center">
