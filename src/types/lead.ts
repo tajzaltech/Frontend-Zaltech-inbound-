@@ -1,4 +1,4 @@
-export type LeadStatus = 'NEW' | 'FOLLOW_UP' | 'BOOKED' | 'LOST';
+export type LeadStatus = 'NEW' | 'FOLLOW_UP' | 'BOOKED' | 'LOST' | 'COMPLETED';
 
 export interface Lead {
     id: string;

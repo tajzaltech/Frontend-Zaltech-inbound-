@@ -19,8 +19,6 @@ export function CallVolumeChart() {
 
     const maxCalls = Math.max(...data.map(d => d.calls));
     const chartHeight = 160;
-    const barWidth = 32;
-    const gap = 16;
 
     return (
         <div className="bg-white rounded-2xl border border-gray-100 p-6 lg:p-8 shadow-sm mb-8">

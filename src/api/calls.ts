@@ -55,7 +55,7 @@ export const callsApi = {
         return mockLiveCalls;
     },
 
-    getCallHistory: async (params?: { from?: string; to?: string; status?: string }): Promise<Call[]> => {
+    getCallHistory: async (_params?: { from?: string; to?: string; status?: string }): Promise<Call[]> => {
         await new Promise(resolve => setTimeout(resolve, 300));
         return mockHistoryCalls;
     },

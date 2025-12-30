@@ -17,7 +17,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             isAuthenticated: false,
 
-            login: async (email: string, password: string) => {
+            login: async (email: string, _password: string) => {
                 // Mock authentication - accept any credentials
                 await new Promise(resolve => setTimeout(resolve, 500));
 
