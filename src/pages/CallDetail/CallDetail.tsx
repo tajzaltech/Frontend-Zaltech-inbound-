@@ -231,40 +231,28 @@ export function CallDetail() {
                                     <div className="space-y-3">
                                         <button
                                             onClick={() => setIsEmailModalOpen(true)}
-                                            className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all group shadow-sm"
+                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-100 transition-colors">
-                                                    <Mail className="w-4 h-4" />
-                                                </div>
-                                                <span className="font-medium text-gray-700">Email Summary</span>
-                                            </div>
+                                            <Mail className="w-5 h-5" />
+                                            <span>Email Summary</span>
                                         </button>
 
                                         {isActiveCall && (
                                             <>
                                                 <button
                                                     onClick={() => setIsTransferModalOpen(true)}
-                                                    className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all group shadow-sm"
+                                                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
                                                 >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg group-hover:bg-purple-100 transition-colors">
-                                                            <UserPlus className="w-4 h-4" />
-                                                        </div>
-                                                        <span className="font-medium text-gray-700">Transfer to Human</span>
-                                                    </div>
+                                                    <UserPlus className="w-5 h-5" />
+                                                    <span>Transfer to Human</span>
                                                 </button>
 
                                                 <button
                                                     onClick={handleEndCall}
-                                                    className="w-full flex items-center justify-between px-4 py-3 bg-white border border-red-100 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all group shadow-sm"
+                                                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-red-100 text-red-600 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all font-medium active:scale-95"
                                                 >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="p-2 bg-red-50 text-red-600 rounded-lg group-hover:bg-red-100 transition-colors">
-                                                            <MicOff className="w-4 h-4" />
-                                                        </div>
-                                                        <span className="font-medium text-red-600">End Call</span>
-                                                    </div>
+                                                    <MicOff className="w-5 h-5" />
+                                                    <span>End Call</span>
                                                 </button>
                                             </>
                                         )}
@@ -272,11 +260,11 @@ export function CallDetail() {
                                         <button
                                             onClick={() => setIsBookingModalOpen(true)}
                                             disabled={!canBook}
-                                            className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-4 bg-gradient-primary text-white rounded-xl shadow-lg shadow-red-900/20 hover:shadow-xl hover:scale-[1.02] transform transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-medium shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                             title={!canBook ? 'Booking requires caller confirmation' : ''}
                                         >
                                             <Calendar className="w-5 h-5" />
-                                            <span className="font-semibold">Create Booking</span>
+                                            <span>Create Booking</span>
                                         </button>
                                     </div>
                                 </div>

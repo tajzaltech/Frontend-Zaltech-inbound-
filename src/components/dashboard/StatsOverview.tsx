@@ -8,8 +8,8 @@ export function StatsOverview() {
             change: '+12%',
             isPositive: true,
             icon: Phone,
-            color: 'text-blue-600',
-            bg: 'bg-blue-50'
+            color: 'text-red-600',
+            bg: 'bg-red-50'
         },
         {
             label: 'Active Agents',
@@ -17,8 +17,8 @@ export function StatsOverview() {
             change: 'Full Capacity',
             isPositive: true,
             icon: Users,
-            color: 'text-purple-600',
-            bg: 'bg-purple-50'
+            color: 'text-red-600',
+            bg: 'bg-red-50'
         },
         {
             label: 'Avg Duration',
@@ -26,8 +26,8 @@ export function StatsOverview() {
             change: '-8%',
             isPositive: true, // shorter duration can be good
             icon: Clock,
-            color: 'text-orange-600',
-            bg: 'bg-orange-50'
+            color: 'text-red-600',
+            bg: 'bg-red-50'
         },
         {
             label: 'Customer Sentiment',
@@ -35,8 +35,8 @@ export function StatsOverview() {
             change: '+0.4',
             isPositive: true,
             icon: TrendingUp,
-            color: 'text-green-600',
-            bg: 'bg-green-50'
+            color: 'text-red-600',
+            bg: 'bg-red-50'
         }
     ];
 

@@ -1,4 +1,4 @@
-import { Bell, Menu } from 'lucide-react';
+import { Bell, Menu, Search } from 'lucide-react';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useUIStore } from '../../store/uiStore';
 import { useState } from 'react';
@@ -16,14 +16,24 @@ export function Header({ title, actions }: HeaderProps) {
 
     return (
         <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 lg:px-8 py-4 lg:py-5 flex items-center justify-between sticky top-0 z-20">
-            <div className="flex items-center gap-3 lg:gap-8">
+            <div className="flex items-center gap-3 lg:gap-8 flex-1">
                 <button
                     onClick={toggleSidebar}
                     className="lg:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
                 >
                     <Menu className="w-6 h-6" />
                 </button>
-                <h1 className="text-xl lg:text-2xl font-bold text-gray-900 tracking-tight truncate">{title}</h1>
+                <h1 className="text-xl lg:text-2xl font-bold text-gray-900 tracking-tight truncate w-auto shrink-0">{title}</h1>
+
+                {/* Universal Search Bar */}
+                <div className="hidden md:flex max-w-md w-full ml-8 relative group">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary-start transition-colors" />
+                    <input
+                        type="text"
+                        placeholder="Search calls, leads, or dates..."
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-start/20 focus:border-primary-start transition-all outline-none text-sm"
+                    />
+                </div>
             </div>
 
             <div className="flex items-center gap-6">

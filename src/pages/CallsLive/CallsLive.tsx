@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { callsApi } from '../../api/calls';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
+import { StatsOverview } from '../../components/dashboard/StatsOverview';
 import { Phone, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -37,6 +38,8 @@ export function CallsLive() {
             <Header title="Live Calls" />
 
             <div className="flex-1 p-4 lg:p-8 overflow-auto">
+                <StatsOverview />
+
                 {calls.length === 0 ? (
                     <div className="card text-center py-16 flex flex-col items-center">
                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
