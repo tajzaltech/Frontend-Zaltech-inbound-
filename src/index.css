@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gradient-primary: linear-gradient(90deg, #525252 0%, #9D1111 100%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #FFFFFF;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D1D5DB;
+}
+
+@layer components {
+  .btn-primary {
+    background: linear-gradient(90deg, #525252 0%, #9D1111 100%);
+    @apply text-white rounded-xl px-5 py-2.5 font-medium transition-all hover:shadow-lg hover:shadow-red-900/10 active:scale-[0.98] disabled:opacity-45 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  .btn-outline {
+    @apply border border-gray-200 bg-white text-gray-700 rounded-xl px-5 py-2.5 font-medium transition-all hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98];
+  }
+
+  .btn-danger-outline {
+    @apply border border-red-200 bg-white text-red-600 rounded-xl px-5 py-2.5 font-medium transition-all hover:bg-red-50 hover:border-red-300 active:scale-[0.98];
+  }
+
+  .card {
+    @apply bg-white border border-gray-100 rounded-2xl p-6;
+    box-shadow: 0 2px 20px rgb(0 0 0 / 0.04);
+  }
+
+  .input-field {
+    @apply bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-gray-900/5 focus:border-gray-900 transition-all;
+  }
+
+  .text-page-title {
+    @apply text-2xl font-bold text-gray-900 tracking-tight;
+  }
+
+  .text-section-title {
+    @apply text-lg font-semibold text-gray-900 tracking-tight;
+  }
+
+  .text-body {
+    @apply text-sm text-gray-600;
+  }
+
+  .text-meta {
+    @apply text-xs font-medium text-gray-500;
+  }
+}
