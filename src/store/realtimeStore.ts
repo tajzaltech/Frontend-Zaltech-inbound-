@@ -11,7 +11,7 @@ interface RealtimeState {
     updateCallDuration: (callId: string) => void;
 }
 
-export const useRealtimeStore = create<RealtimeState>((set, get) => ({
+export const useRealtimeStore = create<RealtimeState>((set) => ({
     activeCalls: new Map(),
     transcripts: new Map(),
     extractions: new Map(),
