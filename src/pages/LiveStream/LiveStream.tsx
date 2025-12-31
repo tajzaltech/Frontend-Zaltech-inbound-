@@ -105,56 +105,27 @@ export function LiveStream() {
                 <div className="flex-1 flex flex-col gap-6">
 
                     {/* TOP: Visualizer Status */}
-                    <div className="h-[120px] bg-gray-900 rounded-2xl p-6 relative overflow-hidden flex flex-col items-center justify-center text-center">
-                        {/* Background Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-950"></div>
-                        <div className="absolute top-0 w-full h-full opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
-                        <div className="relative z-10 flex items-center gap-6">
-                            {selectedCall ? (
-                                <>
-                                    {/* Waveform Animation Mock */}
-                                    <div className="flex items-center justify-center gap-1.5 h-12">
-                                        {[...Array(8)].map((_, i) => (
-                                            <div
-                                                key={i}
-                                                className="w-1.5 bg-gradient-to-t from-green-400 to-emerald-600 rounded-full animate-pulse"
-                                                style={{
-                                                    height: `${Math.random() * 24 + 12}px`,
-                                                    animationDelay: `${i * 0.1}s`,
-                                                    animationDuration: '0.8s'
-                                                }}
-                                            ></div>
-                                        ))}
-                                    </div>
-
-                                    <div className="text-left">
-                                        <h3 className="text-lg font-medium text-white mb-0.5">Call in Progress</h3>
-                                        <p className="text-gray-400 text-xs">Active conversation with {selectedCall.callerNumber}</p>
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="text-gray-500">Select a call to view details</div>
-                            )}
-                        </div>
-                    </div>
 
                     {/* MIDDLE: Live Transcript */}
-                    <div className="flex-1 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col min-h-0">
-                        <div className="flex items-center justify-between mb-4">
+                    {/* MIDDLE: Live Transcript */}
+                    <div className="flex-1 bg-white rounded-2xl border border-gray-100 flex flex-col min-h-0 shadow-sm overflow-hidden">
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b border-gray-100 bg-white flex items-center justify-between">
                             <h3 className="font-bold text-gray-900 flex items-center gap-2">
                                 <MessageSquare className="w-4 h-4 text-gray-400" />
                                 Live Transcript
                             </h3>
-                            <button
-                                onClick={() => selectedCall && navigate(`/calls/${selectedCall.id}`)}
-                                className="text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors"
-                            >
-                                View Full History
-                            </button>
+                            {selectedCall && (
+                                <div className="flex items-center gap-1.5 px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full animate-pulse">
+                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                                    LIVE
+                                </div>
+                            )}
                         </div>
 
-                        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
                             <div className="flex gap-4">
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm shadow-blue-200">AI</div>
                                 <div className="flex-1">
@@ -184,6 +155,16 @@ export function LiveStream() {
                                     <div className="text-[10px] text-gray-400 mt-1 pl-1">10:45:13 AM</div>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex justify-end">
+                            <button
+                                onClick={() => selectedCall && navigate(`/calls/${selectedCall.id}`)}
+                                className="text-xs font-medium text-red-600 hover:text-red-700 bg-white border border-red-100 hover:border-red-200 shadow-sm px-4 py-2 rounded-lg transition-all active:scale-95"
+                            >
+                                View Full History
+                            </button>
                         </div>
                     </div>
 

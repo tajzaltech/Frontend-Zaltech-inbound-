@@ -15,7 +15,7 @@ export function TranscriptStream({ transcript }: TranscriptStreamProps) {
     }, [transcript]);
 
     return (
-        <div className="flex-1 overflow-auto p-6 space-y-4">
+        <div className="flex-1 overflow-auto p-6 space-y-4 custom-scrollbar">
             {transcript.map((item) => {
                 const isAI = item.speaker === 'AI';
 
@@ -35,8 +35,8 @@ export function TranscriptStream({ transcript }: TranscriptStreamProps) {
 
                         <div className={`max-w-[70%] ${isAI ? '' : 'text-right'}`}>
                             <div className={`inline-block px-4 py-2 rounded-lg ${isAI
-                                    ? 'bg-gray-100 text-gray-900'
-                                    : 'bg-white border border-gray-200 text-gray-900'
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'bg-white border border-gray-200 text-gray-900'
                                 }`}>
                                 <p className="text-body">{item.text}</p>
                             </div>

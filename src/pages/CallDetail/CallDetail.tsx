@@ -5,12 +5,12 @@ import { leadsApi } from '../../api/leads';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { TranscriptStream } from '../../components/TranscriptStream/TranscriptStream';
-import { Phone, ArrowLeft, UserPlus, CheckCircle, XCircle, Mail, Calendar, MicOff } from 'lucide-react';
+import { Phone, ArrowLeft, CheckCircle, XCircle, Mail, Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNotificationStore } from '../../store/notificationStore';
 import { EmailSummaryModal } from '../../components/modals/EmailSummaryModal';
 import { BookingModal } from '../../components/modals/BookingModal';
-import { TransferModal } from '../../components/modals/TransferModal';
+
 
 export function CallDetail() {
     const { callId } = useParams<{ callId: string }>();
@@ -21,7 +21,7 @@ export function CallDetail() {
     // Modal States
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+
 
     const { data: call, isLoading } = useQuery({
         queryKey: ['call', callId],
@@ -73,26 +73,7 @@ export function CallDetail() {
         });
     };
 
-    const handleTransfer = (agentId: string) => {
-        setIsTransferModalOpen(false);
-        addNotification({
-            title: 'Call Transferred',
-            message: `Transferring call to Agent ID: ${agentId}...`,
-            type: 'info',
-        });
-        setTimeout(() => navigate('/calls/live'), 1000);
-    };
 
-    const handleEndCall = () => {
-        if (confirm('Are you sure you want to end this call?')) {
-            addNotification({
-                title: 'Call Ended',
-                message: 'Call disconnected by agent',
-                type: 'warning',
-            });
-            setTimeout(() => navigate('/calls/history'), 1000);
-        }
-    };
 
     if (isLoading || !call) {
         return (
@@ -251,25 +232,7 @@ export function CallDetail() {
                                             <span>Email Summary</span>
                                         </button>
 
-                                        {isActiveCall && (
-                                            <>
-                                                <button
-                                                    onClick={() => setIsTransferModalOpen(true)}
-                                                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
-                                                >
-                                                    <UserPlus className="w-5 h-5" />
-                                                    <span>Transfer to Human</span>
-                                                </button>
 
-                                                <button
-                                                    onClick={handleEndCall}
-                                                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-red-100 text-red-600 rounded-xl hover:bg-red-50 hover:border-red-200 transition-all font-medium active:scale-95"
-                                                >
-                                                    <MicOff className="w-5 h-5" />
-                                                    <span>End Call</span>
-                                                </button>
-                                            </>
-                                        )}
 
                                         <button
                                             onClick={() => setIsBookingModalOpen(true)}
@@ -308,11 +271,7 @@ export function CallDetail() {
                 }}
             />
 
-            <TransferModal
-                isOpen={isTransferModalOpen}
-                onClose={() => setIsTransferModalOpen(false)}
-                onTransfer={handleTransfer}
-            />
+
         </div>
     );
 }
