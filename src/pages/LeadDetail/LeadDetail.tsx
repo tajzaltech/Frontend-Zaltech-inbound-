@@ -1,20 +1,33 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { leadsApi } from '../../api/leads';
+import { callsApi } from '../../api/calls';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ArrowLeft, Phone, Calendar, Mail } from 'lucide-react';
 import { format } from 'date-fns';
+import { TranscriptStream } from '../../components/TranscriptStream/TranscriptStream';
 
 export function LeadDetail() {
     const { leadId } = useParams<{ leadId: string }>();
     const navigate = useNavigate();
 
-    const { data: lead, isLoading } = useQuery({
+    const { data: lead, isLoading: isLeadLoading } = useQuery({
         queryKey: ['lead', leadId],
         queryFn: () => leadsApi.getLeadById(leadId!),
         enabled: !!leadId,
     });
+
+    const recentCallId = lead?.relatedCalls?.[0];
+
+    const { data: recentCall, isLoading: isCallLoading } = useQuery({
+        queryKey: ['call', recentCallId],
+        queryFn: () => callsApi.getCallById(recentCallId!),
+        enabled: !!recentCallId,
+    });
+
+    const isLoading = isLeadLoading || (!!recentCallId && isCallLoading);
 
     if (isLoading || !lead) {
         return (
@@ -86,36 +99,15 @@ export function LeadDetail() {
                     </div>
 
                     {/* Recent Transcript Section */}
-                    {lead.relatedCalls.length > 0 && (
-                        <div className="card">
-                            <h3 className="text-section-title mb-4 flex items-center gap-2">
+                    {recentCall && (
+                        <div className="card flex flex-col h-[500px]">
+                            <h3 className="text-section-title mb-4 flex items-center gap-2 flex-shrink-0">
                                 <Phone className="w-4 h-4 text-gray-400" />
                                 Recent Call Transcript
                             </h3>
-                            <div className="bg-gray-50/50 rounded-xl p-6 border border-gray-100 space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">AI</div>
-                                    <div className="flex-1">
-                                        <p className="text-sm text-gray-900 bg-white p-3 rounded-tr-xl rounded-b-xl shadow-sm inline-block">
-                                            Hello! This is Sarah, your AI assistant from Zaltech. How can I help you today?
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4 flex-row-reverse">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-bold">You</div>
-                                    <div className="flex-1 text-right">
-                                        <p className="text-sm text-gray-900 bg-red-50 p-3 rounded-tl-xl rounded-b-xl shadow-sm inline-block text-left">
-                                            Hi, I'm interested in learning more about your AI voice agents. Do they integrate with my CRM?
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">AI</div>
-                                    <div className="flex-1">
-                                        <p className="text-sm text-gray-900 bg-white p-3 rounded-tr-xl rounded-b-xl shadow-sm inline-block">
-                                            Absolutely! We have native integrations for HubSpot, Salesforce, and Zoho. Would you like me to schedule a demo to show you how it works?
-                                        </p>
-                                    </div>
+                            <div className="bg-gray-50/50 rounded-xl border border-gray-100 flex-1 overflow-hidden relative">
+                                <div className="absolute inset-0">
+                                    <TranscriptStream transcript={recentCall.transcript} />
                                 </div>
                             </div>
                         </div>

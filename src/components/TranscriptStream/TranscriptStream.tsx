@@ -10,12 +10,14 @@ interface TranscriptStreamProps {
 export function TranscriptStream({ transcript }: TranscriptStreamProps) {
     const endRef = useRef<HTMLDivElement>(null);
 
+    const lastItemId = transcript[transcript.length - 1]?.id;
+
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [transcript]);
+    }, [transcript.length, lastItemId]);
 
     return (
-        <div className="flex-1 overflow-auto p-6 space-y-4 custom-scrollbar">
+        <div className="h-full overflow-y-auto p-6 space-y-4 custom-scrollbar">
             {transcript.map((item) => {
                 const isAI = item.speaker === 'AI';
 

@@ -5,6 +5,7 @@ import { callsApi } from '../../api/calls';
 import { leadsApi } from '../../api/leads';
 import { useNotificationStore } from '../../store/notificationStore';
 
+import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Phone, Clock, MessageSquare, Mail, CheckCircle, XCircle } from 'lucide-react';
 import { TranscriptStream } from '../../components/TranscriptStream/TranscriptStream';
@@ -87,17 +88,12 @@ export function LiveStream() {
 
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FAFAFA]">
-            {/* Header removed as requested, keeping it clean */}
+            <Header title="Active Calls" />
 
             <div className="flex-1 p-6 lg:p-6 overflow-hidden flex gap-6">
 
                 {/* COLUMN 1: Active Calls List (Left) */}
                 <div className="w-[320px] lg:w-[350px] flex-shrink-0 flex flex-col gap-4">
-                    <div className="flex items-center gap-2 mb-2 px-1">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <h2 className="text-lg font-bold text-gray-900">Active Calls ({calls.length})</h2>
-                    </div>
-
                     <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                         {calls.map((call) => (
                             <div
@@ -151,7 +147,7 @@ export function LiveStream() {
                         {isActiveCall && (
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full animate-pulse border border-red-100">
                                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                                Recording
+                                Live
                             </div>
                         )}
                     </div>
