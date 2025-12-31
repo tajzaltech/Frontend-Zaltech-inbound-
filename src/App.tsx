@@ -4,7 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Sidebar } from './components/layout/Sidebar';
 import { SignIn } from './pages/SignIn/SignIn';
 import { Overview } from './pages/Overview/Overview';
-import { CallDetail } from './pages/CallDetail/CallDetail';
+
 import { LiveStream } from './pages/LiveStream/LiveStream';
 import { Leads } from './pages/Leads/Leads';
 import { LeadDetail } from './pages/LeadDetail/LeadDetail';
@@ -69,16 +69,7 @@ function App() {
             }
           />
 
-          <Route
-            path="/calls/:callId"
-            element={
-              <ProtectedRoute>
-                <AppLayout>
-                  <CallDetail />
-                </AppLayout>
-              </ProtectedRoute>
-            }
-          />
+
 
           <Route
             path="/leads"

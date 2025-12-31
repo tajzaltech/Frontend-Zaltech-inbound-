@@ -1,33 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+
 import { callsApi } from '../../api/calls';
 import { leadsApi } from '../../api/leads';
+import { useNotificationStore } from '../../store/notificationStore';
 
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { Phone, Clock, MessageSquare, User, Mail, Briefcase } from 'lucide-react';
+import { Phone, Clock, MessageSquare, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { TranscriptStream } from '../../components/TranscriptStream/TranscriptStream';
+import { EmailSummaryModal } from '../../components/modals/EmailSummaryModal';
+
 
 import { clsx } from 'clsx';
 
 
 export function LiveStream() {
-    const navigate = useNavigate();
+    const { addNotification } = useNotificationStore();
+
+    // -- Data Fetching --
     const { data: calls = [] } = useQuery({
         queryKey: ['calls', 'live'],
         queryFn: callsApi.getLiveCalls,
         refetchInterval: 2000,
     });
 
-    // Mock selecting the first active call for demo purposes
+    // Mock selecting the first active call for demo purposes or by user selection
     const [selectedCallId, setSelectedCallId] = useState<string | null>(calls[0]?.id || null);
-    const selectedCall = calls.find(c => c.id === selectedCallId) || calls[0];
+
+    // Find the basic call info from the list (for highlighting and fallback)
+    const selectedCallSummary = calls.find(c => c.id === selectedCallId) || calls[0];
+
+    // Fetch FULL DETAILS for the selected call (includes transcript & extraction)
+    const { data: fullCall } = useQuery({
+        queryKey: ['call', selectedCallId],
+        queryFn: () => callsApi.getCallById(selectedCallId!),
+        enabled: !!selectedCallId,
+        refetchInterval: 1000, // Refresh transcript live
+    });
 
     // Fetch lead details for the selected call
     const { data: selectedLead } = useQuery({
-        queryKey: ['lead', selectedCall?.leadId],
-        queryFn: () => leadsApi.getLeadById(selectedCall?.leadId || ''),
-        enabled: !!selectedCall?.leadId,
+        queryKey: ['lead', selectedCallSummary?.leadId],
+        queryFn: () => leadsApi.getLeadById(selectedCallSummary?.leadId || ''),
+        enabled: !!selectedCallSummary?.leadId,
     });
+
+
+    // -- Local State for Modals & Timer --
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+    // -- Effects --
+    useEffect(() => {
+        if (!selectedCallId && calls.length > 0) {
+            setSelectedCallId(calls[0].id);
+        }
+    }, [calls, selectedCallId]);
+
+
+    // -- Handlers --
+    const handleSendEmail = (email: string) => {
+        setIsEmailModalOpen(false);
+        addNotification({
+            title: 'Email Sent',
+            message: `Call summary successfully sent to ${email || 'client'}`,
+            type: 'success',
+        });
+    };
 
     const formatDuration = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -35,16 +72,28 @@ export function LiveStream() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // Derived State
+    const isActiveCall = selectedCallSummary?.status === 'IN_PROGRESS' || selectedCallSummary?.status === 'RINGING';
+
+    // Fallback UI if no calls
+    if (!calls.length && !selectedCallSummary) {
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center bg-[#FAFAFA] p-6 text-gray-500">
+                <div className="text-xl">No active streams found.</div>
+                <p className="text-sm mt-2">Waiting for new calls...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FAFAFA]">
-            {/* Header omitted as Sidebar provides context, but keeping if needed */}
-            {/* <Header title="Live Stream" /> */}
+            {/* Header removed as requested, keeping it clean */}
 
-            <div className="flex-1 p-6 lg:p-8 overflow-hidden flex gap-6">
+            <div className="flex-1 p-6 lg:p-6 overflow-hidden flex gap-6">
 
-                {/* LEFT PANE: Active Calls List */}
-                <div className="w-[380px] flex-shrink-0 flex flex-col gap-4">
-                    <div className="flex items-center gap-2 mb-2">
+                {/* COLUMN 1: Active Calls List (Left) */}
+                <div className="w-[320px] lg:w-[350px] flex-shrink-0 flex flex-col gap-4">
+                    <div className="flex items-center gap-2 mb-2 px-1">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                         <h2 className="text-lg font-bold text-gray-900">Active Calls ({calls.length})</h2>
                     </div>
@@ -83,128 +132,133 @@ export function LiveStream() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-1.5 pt-3 border-t border-gray-50">
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="text-gray-400">Intent:</span>
-                                        <span className="font-medium text-blue-600">Partnership Inquiry</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="text-gray-400">Lead:</span>
-                                        <span className="font-medium text-green-600 flex items-center gap-1">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                                            Captured
-                                        </span>
-                                    </div>
-                                </div>
+                                {/* Mini stats for list item - using call summary data */}
+                                {/* We don't have callerName here unless it's in Call, which it isn't. So removing or making optional. */}
+                                {/* Actually, Call doesn't have extraction. So we simply remove the extra info from the list item or use mock data if needed. */}
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* RIGHT PANE: Details & Transcript */}
-                <div className="flex-1 flex flex-col gap-6">
-
-                    {/* TOP: Visualizer Status */}
-
-
-                    {/* MIDDLE: Live Transcript */}
-                    {/* MIDDLE: Live Transcript */}
-                    <div className="flex-1 bg-white rounded-2xl border border-gray-100 flex flex-col min-h-0 shadow-sm overflow-hidden">
-                        {/* Header */}
-                        <div className="px-6 py-4 border-b border-gray-100 bg-white flex items-center justify-between">
-                            <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                <MessageSquare className="w-4 h-4 text-gray-400" />
-                                Live Transcript
-                            </h3>
-                            {selectedCall && (
-                                <div className="flex items-center gap-1.5 px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full animate-pulse">
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                                    LIVE
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-                            <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm shadow-blue-200">AI</div>
-                                <div className="flex-1">
-                                    <div className="bg-blue-50 text-blue-900 p-3 rounded-2xl rounded-tl-none inline-block text-sm">
-                                        Hello! Thank you for calling Zaltech AI. How can I help you today?
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 mt-1 pl-1">10:44:53 AM</div>
-                                </div>
+                {/* COLUMN 2: Transcript (Center) */}
+                <div className="flex-1 bg-white rounded-2xl border border-gray-200 flex flex-col min-h-0 shadow-sm overflow-hidden">
+                    {/* Header */}
+                    <div className="px-6 py-4 border-b border-gray-100 bg-white flex items-center justify-between sticky top-0 z-10">
+                        <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                            <MessageSquare className="w-4 h-4 text-gray-400" />
+                            Live Transcript
+                        </h3>
+                        {isActiveCall && (
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full animate-pulse border border-red-100">
+                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                                Recording
                             </div>
-
-                            <div className="flex gap-4 flex-row-reverse">
-                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-bold flex-shrink-0">You</div>
-                                <div className="flex-1 text-right">
-                                    <div className="bg-gray-100 text-gray-800 p-3 rounded-2xl rounded-tr-none inline-block text-sm text-left">
-                                        Hi, my name is {selectedLead?.name || 'Robert Wilson'}. I am interested in {selectedLead?.serviceInterest || 'strategy consulting'}.
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 mt-1 pr-1">10:45:03 AM</div>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm shadow-blue-200">AI</div>
-                                <div className="flex-1">
-                                    <div className="bg-blue-50 text-blue-900 p-3 rounded-2xl rounded-tl-none inline-block text-sm">
-                                        Great! I would be happy to help you with that. Could you share your email address?
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 mt-1 pl-1">10:45:13 AM</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex justify-end">
-                            <button
-                                onClick={() => selectedCall && navigate(`/calls/${selectedCall.id}`)}
-                                className="text-xs font-medium text-red-600 hover:text-red-700 bg-white border border-red-100 hover:border-red-200 shadow-sm px-4 py-2 rounded-lg transition-all active:scale-95"
-                            >
-                                View Full History
-                            </button>
-                        </div>
+                        )}
                     </div>
 
-                    {/* BOTTOM: Lead Information */}
-                    <div className="h-[140px] bg-white rounded-2xl border border-gray-100 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                <User className="w-4 h-4 text-gray-400" />
-                                Lead Information
-                            </h3>
-                            <div className="flex items-center gap-1.5 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-100">
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                                Captured
+                    {/* Content */}
+                    <div className="flex-1 min-h-0 relative">
+                        {fullCall ? (
+                            <div className="absolute inset-0">
+                                <TranscriptStream transcript={fullCall.transcript} />
                             </div>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <div className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-                                    <User className="w-3 h-3" /> Name
-                                </div>
-                                <div className="font-medium text-sm text-gray-900">{selectedLead?.name || 'Unknown'}</div>
-                            </div>
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <div className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-                                    <Mail className="w-3 h-3" /> Email
-                                </div>
-                                <div className="font-medium text-sm text-gray-900">{selectedLead?.email || 'N/A'}</div>
-                            </div>
-                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <div className="text-xs text-gray-400 mb-1 flex items-center gap-1.5">
-                                    <Briefcase className="w-3 h-3" /> Industry
-                                </div>
-                                <div className="font-medium text-sm text-gray-900">{selectedLead?.serviceInterest || 'N/A'}</div>
-                            </div>
-                        </div>
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-gray-400 text-sm">Loading transcript...</div>
+                        )}
                     </div>
-
                 </div>
+
+                {/* COLUMN 3: Details & Actions (Right) */}
+                <div className="w-[320px] lg:w-[360px] flex-shrink-0 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1">
+
+
+                    {/* 3.2 Extracted Data Card */}
+                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex-1">
+                        <h3 className="text-base font-bold text-gray-900 mb-6">Extracted Data</h3>
+
+                        {fullCall ? (
+                            <div className="space-y-6">
+                                <div className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
+                                    <div>
+                                        <div className="text-xs font-medium text-gray-500 mb-1">Caller Name</div>
+                                        <div className="font-semibold text-gray-900 text-lg">
+                                            {fullCall.extraction.callerName || '—'}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="text-xs font-medium text-gray-500 mb-1">Email</div>
+                                        <div className="font-semibold text-gray-900 break-words">
+                                            {selectedLead?.email || '—'}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="text-xs font-medium text-gray-500 mb-1">Service Interest</div>
+                                        <div className="font-medium text-blue-600">
+                                            {fullCall.extraction.service || '—'}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <div className="text-xs font-medium text-gray-500 mb-1">Date</div>
+                                            <div className="font-medium text-gray-900">
+                                                {fullCall.extraction.dateISO || '—'}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-xs font-medium text-gray-500 mb-1">Time</div>
+                                            <div className="font-medium text-gray-900">
+                                                {fullCall.extraction.timeISO || '—'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Confirmation Status */}
+                                <div>
+                                    <div className="flex items-center gap-2 mb-6">
+                                        {fullCall.extraction.confirmed ? (
+                                            <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-2 rounded-lg w-full justify-center">
+                                                <CheckCircle className="w-4 h-4" />
+                                                <span className="font-medium text-sm">Confirmed</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 text-gray-500 bg-gray-50 px-3 py-2 rounded-lg w-full justify-center">
+                                                <XCircle className="w-4 h-4" />
+                                                <span className="font-medium text-sm">Not Confirmed</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Call Actions */}
+                                    <div className="space-y-3">
+                                        <button
+                                            onClick={() => setIsEmailModalOpen(true)}
+                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
+                                        >
+                                            <Mail className="w-5 h-5" />
+                                            <span>Email Summary</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-sm text-gray-500">Loading call details...</div>
+                        )}
+                    </div>
+                </div>
+
             </div>
+
+            {/* Action Modals */}
+            <EmailSummaryModal
+                isOpen={isEmailModalOpen}
+                onClose={() => setIsEmailModalOpen(false)}
+                onSend={handleSendEmail}
+                defaultEmail="admin@zaltech.ai"
+            />
         </div>
     );
 }
