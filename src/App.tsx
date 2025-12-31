@@ -3,9 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Sidebar } from './components/layout/Sidebar';
 import { SignIn } from './pages/SignIn/SignIn';
-import { CallsLive } from './pages/CallsLive/CallsLive';
+import { Overview } from './pages/Overview/Overview';
 import { CallDetail } from './pages/CallDetail/CallDetail';
-import { CallHistory } from './pages/CallHistory/CallHistory';
+import { LiveStream } from './pages/LiveStream/LiveStream';
 import { Leads } from './pages/Leads/Leads';
 import { LeadDetail } from './pages/LeadDetail/LeadDetail';
 import { Services } from './pages/Services/Services';
@@ -42,28 +42,28 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Navigate to="/calls/live" replace />
+                <Navigate to="/overview" replace />
               </ProtectedRoute>
             }
           />
 
           <Route
-            path="/calls/live"
+            path="/overview"
             element={
               <ProtectedRoute>
                 <AppLayout>
-                  <CallsLive />
+                  <Overview />
                 </AppLayout>
               </ProtectedRoute>
             }
           />
 
           <Route
-            path="/calls/history"
+            path="/live-stream"
             element={
               <ProtectedRoute>
                 <AppLayout>
-                  <CallHistory />
+                  <LiveStream />
                 </AppLayout>
               </ProtectedRoute>
             }

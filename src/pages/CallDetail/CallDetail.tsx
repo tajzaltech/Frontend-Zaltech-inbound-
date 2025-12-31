@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { callsApi } from '../../api/calls';
+import { leadsApi } from '../../api/leads';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { TranscriptStream } from '../../components/TranscriptStream/TranscriptStream';
@@ -26,6 +27,12 @@ export function CallDetail() {
         queryKey: ['call', callId],
         queryFn: () => callsApi.getCallById(callId!),
         enabled: !!callId,
+    });
+
+    const { data: lead } = useQuery({
+        queryKey: ['lead', call?.leadId],
+        queryFn: () => leadsApi.getLeadById(call?.leadId || ''),
+        enabled: !!call?.leadId,
     });
 
     // Live duration timer
@@ -187,6 +194,13 @@ export function CallDetail() {
                                         <div className="text-xs font-medium text-gray-500 mb-1">Caller Name</div>
                                         <div className="font-semibold text-gray-900 text-lg">
                                             {call.extraction.callerName || '—'}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="text-xs font-medium text-gray-500 mb-1">Email</div>
+                                        <div className="font-semibold text-gray-900 break-words">
+                                            {lead?.email || '—'}
                                         </div>
                                     </div>
 

@@ -5,7 +5,7 @@ const mockLiveCalls: Call[] = [
     {
         id: 'call-1',
         twilioSid: 'CA1234567890',
-        callerNumber: '+1234567890',
+        callerNumber: '+1 (555) 123-4567',
         status: 'IN_PROGRESS',
         startedAt: new Date(Date.now() - 120000), // 2 minutes ago
         durationSec: 120,
@@ -15,11 +15,57 @@ const mockLiveCalls: Call[] = [
     {
         id: 'call-2',
         twilioSid: 'CA0987654321',
-        callerNumber: '+9876543210',
+        callerNumber: '+1 (555) 987-6543',
         status: 'RINGING',
         startedAt: new Date(Date.now() - 5000), // 5 seconds ago
         durationSec: 5,
         confidence: 0,
+    },
+    {
+        id: 'call-3',
+        twilioSid: 'CA1122334455',
+        callerNumber: '+1 (555) 234-5678',
+        status: 'IN_PROGRESS',
+        startedAt: new Date(Date.now() - 300000), // 5 minutes ago
+        durationSec: 300,
+        confidence: 0.92,
+        leadId: 'lead-2',
+    },
+    {
+        id: 'call-4',
+        twilioSid: 'CA5566778899',
+        callerNumber: '+1 (555) 345-6789',
+        status: 'IN_PROGRESS',
+        startedAt: new Date(Date.now() - 60000), // 1 minute ago
+        durationSec: 60,
+        confidence: 0.75,
+    },
+    {
+        id: 'call-5',
+        twilioSid: 'CA9988776655',
+        callerNumber: '+1 (555) 456-7890',
+        status: 'IN_PROGRESS',
+        startedAt: new Date(Date.now() - 45000), // 45 seconds ago
+        durationSec: 45,
+        confidence: 0.88,
+    },
+    {
+        id: 'call-6',
+        twilioSid: 'CA4433221100',
+        callerNumber: '+1 (555) 567-8901',
+        status: 'RINGING',
+        startedAt: new Date(Date.now() - 15000), // 15 seconds ago
+        durationSec: 15,
+        confidence: 0,
+    },
+    {
+        id: 'call-7',
+        twilioSid: 'CA1112223334',
+        callerNumber: '+1 (555) 678-9012',
+        status: 'IN_PROGRESS',
+        startedAt: new Date(Date.now() - 600000), // 10 minutes ago
+        durationSec: 600,
+        confidence: 0.95,
     },
 ];
 

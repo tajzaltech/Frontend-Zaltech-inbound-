@@ -24,8 +24,8 @@ export function Sidebar() {
     };
 
     const navItems = [
-        { icon: LayoutDashboard, label: 'Calls (Live)', path: '/calls/live' },
-        { icon: History, label: 'Call History', path: '/calls/history' },
+        { icon: LayoutDashboard, label: 'Overview', path: '/overview' },
+        { icon: History, label: 'Live Stream', path: '/live-stream' },
         { icon: Users, label: 'Leads', path: '/leads' },
         { icon: Box, label: 'Services', path: '/services' },
         { icon: SettingsIcon, label: 'Settings', path: '/settings' },

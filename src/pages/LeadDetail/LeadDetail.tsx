@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { leadsApi } from '../../api/leads';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { ArrowLeft, Phone, Calendar } from 'lucide-react';
+import { ArrowLeft, Phone, Calendar, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function LeadDetail() {
@@ -52,6 +52,10 @@ export function LeadDetail() {
                                     <div className="flex items-center gap-2">
                                         <Phone className="w-4 h-4" />
                                         {lead.phone}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="w-4 h-4" />
+                                        {lead.email}
                                     </div>
                                     {lead.lastCallAt && (
                                         <div className="flex items-center gap-2">

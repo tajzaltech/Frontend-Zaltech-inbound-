@@ -4,7 +4,7 @@ import { leadsApi } from '../../api/leads';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { format } from 'date-fns';
-import { Phone, Calendar } from 'lucide-react';
+import { Phone, Calendar, Mail } from 'lucide-react';
 
 export function Leads() {
     const navigate = useNavigate();
@@ -69,6 +69,10 @@ export function Leads() {
                                                 <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
                                                     <Phone className="w-3 h-3" />
                                                     {lead.phone}
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                                                    <Mail className="w-3 h-3" />
+                                                    {lead.email}
                                                 </div>
                                             </div>
                                             <StatusBadge status={lead.status} />

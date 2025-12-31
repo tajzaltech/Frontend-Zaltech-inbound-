@@ -4,6 +4,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-1',
         name: 'John Smith',
+        email: 'john.smith@gmail.com',
         phone: '+1234567890',
         status: 'FOLLOW_UP',
         serviceInterest: 'ChatBot',
@@ -13,6 +14,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-2',
         name: 'Jane Doe',
+        email: 'jane.doe@example.com',
         phone: '+1111111111',
         status: 'BOOKED',
         serviceInterest: 'AI Consulting',
@@ -22,6 +24,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-3',
         name: 'Bob Johnson',
+        email: 'bob.j@corporate.net',
         phone: '+2222222222',
         status: 'LOST',
         serviceInterest: 'Consultation',
@@ -31,6 +34,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-4',
         name: 'Alice Cooper',
+        email: 'alice.c@studio.io',
         phone: '+15550001234',
         status: 'NEW',
         serviceInterest: 'AI Voice Agent',
@@ -40,6 +44,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-5',
         name: 'Michael Chen',
+        email: 'michael.chen@tech.com',
         phone: '+15559998888',
         status: 'NEW',
         serviceInterest: 'Website Integration',
@@ -49,6 +54,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-6',
         name: 'Sarah Connor',
+        email: 'sarah.connor@sky.net',
         phone: '+12125556789',
         status: 'FOLLOW_UP',
         serviceInterest: 'Custom Development',
@@ -58,6 +64,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-7',
         name: 'David Miller',
+        email: 'david.m@construct.com',
         phone: '+13105554321',
         status: 'BOOKED',
         serviceInterest: 'Monthly Support',
@@ -67,6 +74,7 @@ const mockLeads: Lead[] = [
     {
         id: 'lead-8',
         name: 'Emily White',
+        email: 'emily.white@design.co',
         phone: '+14155559876',
         status: 'FOLLOW_UP',
         serviceInterest: 'ChatBot',
