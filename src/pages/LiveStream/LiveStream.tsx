@@ -93,7 +93,7 @@ export function LiveStream() {
             <div className="flex-1 p-6 lg:p-6 overflow-hidden flex gap-6">
 
                 {/* COLUMN 1: Active Calls List (Left) */}
-                <div className="w-[320px] lg:w-[350px] flex-shrink-0 flex flex-col gap-4">
+                <div className="w-[280px] lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
                     <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                         {calls.map((call) => (
                             <div
@@ -147,7 +147,7 @@ export function LiveStream() {
                         {isActiveCall && (
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full animate-pulse border border-red-100">
                                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                                Live
+                                Recording
                             </div>
                         )}
                     </div>
@@ -165,7 +165,7 @@ export function LiveStream() {
                 </div>
 
                 {/* COLUMN 3: Details & Actions (Right) */}
-                <div className="w-[320px] lg:w-[360px] flex-shrink-0 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1">
+                <div className="w-[280px] lg:w-[300px] flex-shrink-0 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1">
 
 
                     {/* 3.2 Extracted Data Card */}
