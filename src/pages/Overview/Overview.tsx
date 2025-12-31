@@ -5,7 +5,7 @@ import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { StatsOverview } from '../../components/dashboard/StatsOverview';
 import { CallVolumeChart } from '../../components/dashboard/CallVolumeChart';
-import { Phone, Clock, ArrowRight, User, Mail } from 'lucide-react';
+import { Clock, ArrowRight, User, Mail } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export function Overview() {

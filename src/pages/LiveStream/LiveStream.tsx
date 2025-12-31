@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { callsApi } from '../../api/calls';
 import { leadsApi } from '../../api/leads';
-import { Header } from '../../components/layout/Header';
+
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { Phone, Clock, MessageSquare, User, Mail, Briefcase, Activity, Play } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { Phone, Clock, MessageSquare, User, Mail, Briefcase } from 'lucide-react';
+
 import { clsx } from 'clsx';
-import type { Call } from '../../types/call';
+
 
 export function LiveStream() {
     const navigate = useNavigate();

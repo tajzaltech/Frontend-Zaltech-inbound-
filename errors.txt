@@ -1,0 +1,6 @@
+﻿src/pages/LiveStream/LiveStream.tsx(6,1): error TS6133: 'Header' is declared but its value is never read.
+src/pages/LiveStream/LiveStream.tsx(8,62): error TS6133: 'Activity' is declared but its value is never read.
+src/pages/LiveStream/LiveStream.tsx(8,72): error TS6133: 'Play' is declared but its value is never read.
+src/pages/LiveStream/LiveStream.tsx(9,1): error TS6133: 'formatDistanceToNow' is declared but its value is never read.
+src/pages/LiveStream/LiveStream.tsx(11,1): error TS6133: 'Call' is declared but its value is never read.
+src/pages/Overview/Overview.tsx(8,10): error TS6133: 'Phone' is declared but its value is never read.
