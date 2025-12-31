@@ -1,0 +1,2 @@
+﻿src/components/modals/CallInfoModal.tsx(2,36): error TS2307: Cannot find module '@headlessui/react' or its corresponding type declarations.
+src/components/modals/CallInfoModal.tsx(3,30): error TS2724: '"lucide-react"' has no exported member named 'checkCircle'. Did you mean 'CheckCircle'?

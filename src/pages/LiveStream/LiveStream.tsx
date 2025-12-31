@@ -2,21 +2,19 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { callsApi } from '../../api/calls';
-import { leadsApi } from '../../api/leads';
-import { useNotificationStore } from '../../store/notificationStore';
+
 
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
-import { Phone, Clock, MessageSquare, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { Phone, Clock, MessageSquare, Info } from 'lucide-react';
 import { TranscriptStream } from '../../components/TranscriptStream/TranscriptStream';
-import { EmailSummaryModal } from '../../components/modals/EmailSummaryModal';
+import { CallInfoModal } from '../../components/modals/CallInfoModal';
 
 
 import { clsx } from 'clsx';
 
 
 export function LiveStream() {
-    const { addNotification } = useNotificationStore();
 
     // -- Data Fetching --
     const { data: calls = [] } = useQuery({
@@ -39,16 +37,9 @@ export function LiveStream() {
         refetchInterval: 1000, // Refresh transcript live
     });
 
-    // Fetch lead details for the selected call
-    const { data: selectedLead } = useQuery({
-        queryKey: ['lead', selectedCallSummary?.leadId],
-        queryFn: () => leadsApi.getLeadById(selectedCallSummary?.leadId || ''),
-        enabled: !!selectedCallSummary?.leadId,
-    });
+    // -- Local State for Modal --
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-
-    // -- Local State for Modals & Timer --
-    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     // -- Effects --
     useEffect(() => {
         if (!selectedCallId && calls.length > 0) {
@@ -58,13 +49,10 @@ export function LiveStream() {
 
 
     // -- Handlers --
-    const handleSendEmail = (email: string) => {
-        setIsEmailModalOpen(false);
-        addNotification({
-            title: 'Email Sent',
-            message: `Call summary successfully sent to ${email || 'client'}`,
-            type: 'success',
-        });
+    const handleOpenDetails = (callId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent triggering the row selection
+        setSelectedCallId(callId);
+        setIsDetailsModalOpen(true);
     };
 
     const formatDuration = (seconds: number) => {
@@ -93,7 +81,7 @@ export function LiveStream() {
             <div className="flex-1 p-6 lg:p-6 overflow-hidden flex gap-6">
 
                 {/* COLUMN 1: Active Calls List (Left) */}
-                <div className="w-[280px] lg:w-[300px] flex-shrink-0 flex flex-col gap-4">
+                <div className="w-[300px] lg:w-[320px] flex-shrink-0 flex flex-col gap-4">
                     <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                         {calls.map((call) => (
                             <div
@@ -128,15 +116,19 @@ export function LiveStream() {
                                     </div>
                                 </div>
 
-                                {/* Mini stats for list item - using call summary data */}
-                                {/* We don't have callerName here unless it's in Call, which it isn't. So removing or making optional. */}
-                                {/* Actually, Call doesn't have extraction. So we simply remove the extra info from the list item or use mock data if needed. */}
+                                <button
+                                    onClick={(e) => handleOpenDetails(call.id, e)}
+                                    className="w-full flex items-center justify-center gap-2 mt-2 py-2 text-xs font-medium text-gray-600 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors border border-gray-200 hover:border-red-100"
+                                >
+                                    <Info className="w-3.5 h-3.5" />
+                                    View Details
+                                </button>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* COLUMN 2: Transcript (Center) */}
+                {/* COLUMN 2: Transcript (Center - Expanded) */}
                 <div className="flex-1 bg-white rounded-2xl border border-gray-200 flex flex-col min-h-0 shadow-sm overflow-hidden">
                     {/* Header */}
                     <div className="px-6 py-4 border-b border-gray-100 bg-white flex items-center justify-between sticky top-0 z-10">
@@ -164,96 +156,13 @@ export function LiveStream() {
                     </div>
                 </div>
 
-                {/* COLUMN 3: Details & Actions (Right) */}
-                <div className="w-[280px] lg:w-[300px] flex-shrink-0 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-1">
-
-
-                    {/* 3.2 Extracted Data Card */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm flex-1">
-                        <h3 className="text-base font-bold text-gray-900 mb-6">Extracted Data</h3>
-
-                        {fullCall ? (
-                            <div className="space-y-6">
-                                <div className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
-                                    <div>
-                                        <div className="text-xs font-medium text-gray-500 mb-1">Caller Name</div>
-                                        <div className="font-semibold text-gray-900 text-lg">
-                                            {fullCall.extraction.callerName || '—'}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="text-xs font-medium text-gray-500 mb-1">Email</div>
-                                        <div className="font-semibold text-gray-900 break-words">
-                                            {selectedLead?.email || '—'}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="text-xs font-medium text-gray-500 mb-1">Service Interest</div>
-                                        <div className="font-medium text-blue-600">
-                                            {fullCall.extraction.service || '—'}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <div className="text-xs font-medium text-gray-500 mb-1">Date</div>
-                                            <div className="font-medium text-gray-900">
-                                                {fullCall.extraction.dateISO || '—'}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="text-xs font-medium text-gray-500 mb-1">Time</div>
-                                            <div className="font-medium text-gray-900">
-                                                {fullCall.extraction.timeISO || '—'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Confirmation Status */}
-                                <div>
-                                    <div className="flex items-center gap-2 mb-6">
-                                        {fullCall.extraction.confirmed ? (
-                                            <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-2 rounded-lg w-full justify-center">
-                                                <CheckCircle className="w-4 h-4" />
-                                                <span className="font-medium text-sm">Confirmed</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-2 text-gray-500 bg-gray-50 px-3 py-2 rounded-lg w-full justify-center">
-                                                <XCircle className="w-4 h-4" />
-                                                <span className="font-medium text-sm">Not Confirmed</span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Call Actions */}
-                                    <div className="space-y-3">
-                                        <button
-                                            onClick={() => setIsEmailModalOpen(true)}
-                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
-                                        >
-                                            <Mail className="w-5 h-5" />
-                                            <span>Email Summary</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="text-sm text-gray-500">Loading call details...</div>
-                        )}
-                    </div>
-                </div>
-
             </div>
 
             {/* Action Modals */}
-            <EmailSummaryModal
-                isOpen={isEmailModalOpen}
-                onClose={() => setIsEmailModalOpen(false)}
-                onSend={handleSendEmail}
-                defaultEmail="admin@zaltech.ai"
+            <CallInfoModal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                call={fullCall || null}
             />
         </div>
     );
