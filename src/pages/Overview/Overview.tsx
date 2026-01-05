@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { leadsApi } from '../../api/leads';
+import { statsApi } from '../../api/stats';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { StatsOverview } from '../../components/dashboard/StatsOverview';
@@ -13,7 +14,14 @@ export function Overview() {
 
     const { data: leads = [] } = useQuery({
         queryKey: ['leads'],
-        queryFn: leadsApi.getLeads,
+        queryFn: () => leadsApi.getLeads(),
+        refetchInterval: 10000, // Refresh leads every 10s
+    });
+
+    const { data: stats = null } = useQuery({
+        queryKey: ['dashboard-stats'],
+        queryFn: () => statsApi.getDashboardStats(),
+        refetchInterval: 5000, // Refresh stats every 5s for real-time feel
     });
 
     // Get recent leads (last 5)
@@ -26,7 +34,7 @@ export function Overview() {
             <Header title="Overview" />
 
             <div className="flex-1 p-4 lg:p-8 overflow-auto">
-                <StatsOverview />
+                <StatsOverview stats={stats} />
                 <CallVolumeChart />
 
                 <div>
@@ -47,9 +55,9 @@ export function Overview() {
                                 <thead className="bg-gray-50 border-b border-gray-100">
                                     <tr>
                                         <th className="text-left py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Lead Name</th>
-                                        <th className="text-left py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Service Interest</th>
+                                        <th className="hidden sm:table-cell text-left py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Service Interest</th>
                                         <th className="text-left py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                                        <th className="text-left py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
+                                        <th className="hidden lg:table-cell text-left py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
                                         <th className="text-right py-3 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">Action</th>
                                     </tr>
                                 </thead>
@@ -75,13 +83,13 @@ export function Overview() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="hidden sm:table-cell py-4 px-6">
                                                 <div className="text-sm text-gray-600">{lead.serviceInterest}</div>
                                             </td>
                                             <td className="py-4 px-6">
                                                 <StatusBadge status={lead.status} />
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="hidden lg:table-cell py-4 px-6">
                                                 <div className="flex items-center gap-1 text-sm text-gray-500">
                                                     <Clock className="w-3.5 h-3.5" />
                                                     {formatDistanceToNow(new Date(lead.createdAt), { addSuffix: true })}

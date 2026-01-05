@@ -1,134 +1,96 @@
 import type { Lead, LeadDetail } from '../types/lead';
+import { apiClient } from './client';
 
-const mockLeads: Lead[] = [
-    {
-        id: 'lead-1',
-        name: 'John Smith',
-        email: 'john.smith@gmail.com',
-        phone: '+1234567890',
-        status: 'FOLLOW_UP',
-        serviceInterest: 'ChatBot',
-        lastCallAt: new Date(Date.now() - 120000),
-        createdAt: new Date(Date.now() - 86400000),
-    },
-    {
-        id: 'lead-2',
-        name: 'Jane Doe',
-        email: 'jane.doe@example.com',
-        phone: '+1111111111',
-        status: 'BOOKED',
-        serviceInterest: 'AI Consulting',
-        lastCallAt: new Date(Date.now() - 3600000),
-        createdAt: new Date(Date.now() - 172800000),
-    },
-    {
-        id: 'lead-3',
-        name: 'Bob Johnson',
-        email: 'bob.j@corporate.net',
-        phone: '+2222222222',
-        status: 'LOST',
-        serviceInterest: 'Consultation',
-        lastCallAt: new Date(Date.now() - 7200000),
-        createdAt: new Date(Date.now() - 259200000),
-    },
-    {
-        id: 'lead-4',
-        name: 'Alice Cooper',
-        email: 'alice.c@studio.io',
-        phone: '+15550001234',
-        status: 'NEW',
-        serviceInterest: 'AI Voice Agent',
-        lastCallAt: undefined,
-        createdAt: new Date(Date.now() - 3600000), // 1 hour ago
-    },
-    {
-        id: 'lead-5',
-        name: 'Michael Chen',
-        email: 'michael.chen@tech.com',
-        phone: '+15559998888',
-        status: 'NEW',
-        serviceInterest: 'Website Integration',
-        lastCallAt: new Date(Date.now() - 1800000), // 30 mins ago
-        createdAt: new Date(Date.now() - 7200000),
-    },
-    {
-        id: 'lead-6',
-        name: 'Sarah Connor',
-        email: 'sarah.connor@sky.net',
-        phone: '+12125556789',
-        status: 'FOLLOW_UP',
-        serviceInterest: 'Custom Development',
-        lastCallAt: new Date(Date.now() - 86400000 * 2), // 2 days ago
-        createdAt: new Date(Date.now() - 86400000 * 5),
-    },
-    {
-        id: 'lead-7',
-        name: 'David Miller',
-        email: 'david.m@construct.com',
-        phone: '+13105554321',
-        status: 'BOOKED',
-        serviceInterest: 'Monthly Support',
-        lastCallAt: new Date(Date.now() - 86400000), // 1 day ago
-        createdAt: new Date(Date.now() - 86400000 * 3),
-    },
-    {
-        id: 'lead-8',
-        name: 'Emily White',
-        email: 'emily.white@design.co',
-        phone: '+14155559876',
-        status: 'FOLLOW_UP',
-        serviceInterest: 'ChatBot',
-        lastCallAt: new Date(Date.now() - 43200000), // 12 hours ago
-        createdAt: new Date(Date.now() - 86400000 * 2),
-    },
-];
+// Helper to map snake_case backend Lead to camelCase frontend Lead
+function mapLead(data: any): Lead {
+    let status = (data.status || 'NEW').toUpperCase();
+
+    // Priority 1: If an appointment is booked, it's definitely BOOKED
+    if (data.converted_to_appointment === true || data.appointment_id) {
+        status = 'BOOKED';
+    }
+    // Priority 2: If lead has a call attached but no appointment, it's a FOLLOW_UP
+    else if (data.call_id || status.includes('PENDING') || status.includes('FOLLOW')) {
+        status = 'FOLLOW_UP';
+    }
+    // Priority 3: Genuine New leads (no calls, no interaction)
+    else {
+        status = 'NEW';
+    }
+
+    return {
+        id: data.lead_id || data.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone || 'N/A',
+        status: status as any,
+        serviceInterest: data.interested_services?.[0] || data.intent || 'Unknown',
+        lastCallAt: data.last_call_at ? new Date(data.last_call_at) : undefined,
+        createdAt: new Date(data.created_at || Date.now()),
+    };
+}
 
 export const leadsApi = {
-    getLeads: async (): Promise<Lead[]> => {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return mockLeads;
+    getLeads: async (params?: { page?: number; page_size?: number; status?: string }): Promise<Lead[]> => {
+        let path = '/ops/leads';
+        if (params && typeof params === 'object' && !('queryKey' in params)) {
+            const query = new URLSearchParams(params as any).toString();
+            path += `?${query}`;
+        }
+
+        try {
+            const response = await apiClient.get<{ leads: any[] }>(path);
+            return (response.leads || []).map(mapLead);
+        } catch (error) {
+            console.error('Leads API failed:', error);
+            return []; // Return empty list on failure so UI handles it
+        }
     },
 
     getLeadById: async (leadId: string): Promise<LeadDetail> => {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        const response = await apiClient.get<any>(`/ops/leads/${leadId}`);
 
-        const lead = mockLeads.find(l => l.id === leadId);
-
-        if (!lead) {
-            throw new Error('Lead not found');
+        // Handle both related_calls (array) and single call_id from backend
+        let relatedCalls = response.related_calls || [];
+        if (relatedCalls.length === 0 && response.call_id) {
+            relatedCalls = [response.call_id];
         }
 
+        const inferType = (action: string): any => {
+            const a = action.toLowerCase();
+            if (a.includes('call')) return 'call';
+            if (a.includes('ai') || a.includes('extracted') || a.includes('identified')) return 'ai';
+            if (a.includes('status')) return 'status';
+            if (a.includes('appointment') || a.includes('booked')) return 'appointment';
+            return 'system';
+        };
+
         return {
-            ...lead,
-            relatedCalls: ['call-1', 'call-3'],
-            notes: 'Customer interested in regular appointments. Prefers afternoon slots.',
-            auditLog: [
-                {
-                    id: 'audit-1',
-                    timestamp: new Date(Date.now() - 3600000),
-                    action: 'Status Changed',
-                    user: 'System',
-                    details: 'Status changed from NEW to FOLLOW_UP',
-                },
-                {
-                    id: 'audit-2',
-                    timestamp: new Date(lead.createdAt),
-                    action: 'Lead Created',
-                    user: 'System',
-                    details: 'Lead created from incoming call',
-                },
-            ],
+            ...mapLead(response),
+            relatedCalls,
+            notes: response.notes || '',
+            auditLog: (response.audit_log || []).map((log: any) => ({
+                id: log.id,
+                timestamp: new Date(log.timestamp),
+                action: log.action,
+                user: log.user,
+                details: log.details,
+                type: log.type || inferType(log.action),
+            })),
         };
     },
 
     updateLead: async (leadId: string, data: Partial<Lead>): Promise<Lead> => {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Map frontend fields to backend fields
+        const backendData: any = {};
+        if (data.status) backendData.status = data.status.toLowerCase();
+        if ((data as any).notes) backendData.notes = (data as any).notes;
 
-        const lead = mockLeads.find(l => l.id === leadId);
-        if (!lead) {
-            throw new Error('Lead not found');
-        }
+        const response = await apiClient.patch<any>(`/ops/leads/${leadId}`, backendData);
+        return mapLead(response);
+    },
 
-        return { ...lead, ...data };
+    assignLead: async (leadId: string, userId: string): Promise<void> => {
+        await apiClient.post(`/ops/leads/${leadId}/assign/${userId}`);
     },
 };

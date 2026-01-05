@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { callsApi } from '../../api/calls';
+import { statsApi } from '../../api/stats';
 import { Header } from '../../components/layout/Header';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { StatsOverview } from '../../components/dashboard/StatsOverview';
@@ -13,8 +14,14 @@ export function CallsLive() {
 
     const { data: calls = [], isLoading } = useQuery({
         queryKey: ['calls', 'live'],
-        queryFn: callsApi.getLiveCalls,
+        queryFn: () => callsApi.getLiveCalls(),
         refetchInterval: 2000,
+    });
+
+    const { data: stats = null } = useQuery({
+        queryKey: ['dashboard-stats'],
+        queryFn: () => statsApi.getDashboardStats(),
+        refetchInterval: 5000,
     });
 
     const formatDuration = (seconds: number) => {
@@ -39,7 +46,7 @@ export function CallsLive() {
             <Header title="Live Calls" />
 
             <div className="flex-1 p-4 lg:p-8 overflow-auto">
-                <StatsOverview />
+                <StatsOverview stats={stats} />
                 <CallVolumeChart />
 
                 {calls.length === 0 ? (

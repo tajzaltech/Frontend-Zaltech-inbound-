@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build/compile output logs
+build_error.txt
+errors.txt
+tsc_output.txt
+
+.cache/
+.temp/

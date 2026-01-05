@@ -7,45 +7,27 @@ export interface Notification {
     type: 'info' | 'success' | 'warning' | 'error';
     isRead: boolean;
     timestamp: Date;
+    toastOnly?: boolean;
 }
 
 interface NotificationState {
     notifications: Notification[];
     unreadCount: number;
+    connection: WebSocket | null;
     addNotification: (notification: Omit<Notification, 'id' | 'isRead' | 'timestamp'>) => void;
     markAsRead: (id: string) => void;
     markAllAsRead: () => void;
     clearAll: () => void;
+    connect: () => void;
+    disconnect: () => void;
 }
 
-export const useNotificationStore = create<NotificationState>((set) => ({
-    notifications: [
-        {
-            id: '1',
-            title: 'Missed Call',
-            message: 'You have a missed call from +1 (555) 123-4567',
-            type: 'warning',
-            isRead: false,
-            timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        },
-        {
-            id: '2',
-            title: 'Email Sent',
-            message: 'Booking confirmaton sent to john.doe@example.com',
-            type: 'success',
-            isRead: false,
-            timestamp: new Date(Date.now() - 1000 * 60 * 30),
-        },
-        {
-            id: '3',
-            title: 'Meeting Booked',
-            message: 'New appointment scheduled for tomorrow at 2:00 PM',
-            type: 'info',
-            isRead: true,
-            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        },
-    ],
-    unreadCount: 2,
+const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/api/v1/ws';
+
+export const useNotificationStore = create<NotificationState>((set, get) => ({
+    notifications: [],
+    unreadCount: 0,
+    connection: null,
 
     addNotification: (data) =>
         set((state) => {
@@ -57,17 +39,21 @@ export const useNotificationStore = create<NotificationState>((set) => ({
             };
             return {
                 notifications: [newNotification, ...state.notifications],
-                unreadCount: state.unreadCount + 1,
+                unreadCount: data.toastOnly ? state.unreadCount : state.unreadCount + 1,
             };
         }),
 
     markAsRead: (id) =>
-        set((state) => ({
-            notifications: state.notifications.map((n) =>
-                n.id === id ? { ...n, isRead: true } : n
-            ),
-            unreadCount: state.unreadCount - 1,
-        })),
+        set((state) => {
+            const n = state.notifications.find(n => n.id === id);
+            if (n?.isRead) return state;
+            return {
+                notifications: state.notifications.map((n) =>
+                    n.id === id ? { ...n, isRead: true } : n
+                ),
+                unreadCount: state.unreadCount - 1,
+            };
+        }),
 
     markAllAsRead: () =>
         set((state) => ({
@@ -76,4 +62,39 @@ export const useNotificationStore = create<NotificationState>((set) => ({
         })),
 
     clearAll: () => set({ notifications: [], unreadCount: 0 }),
+
+    connect: () => {
+        if (get().connection) return;
+
+        const ws = new WebSocket(`${WS_BASE_URL}/notifications`);
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                get().addNotification({
+                    title: data.title || 'New Alert',
+                    message: data.message || 'Something happened',
+                    type: data.type || 'info',
+                });
+            } catch (err) {
+                console.error('Failed to parse notification message', err);
+            }
+        };
+
+        ws.onclose = () => {
+            set({ connection: null });
+            // Optional: reconnect logic
+            setTimeout(() => get().connect(), 5000);
+        };
+
+        set({ connection: ws });
+    },
+
+    disconnect: () => {
+        const { connection } = get();
+        if (connection) {
+            connection.close();
+            set({ connection: null });
+        }
+    },
 }));

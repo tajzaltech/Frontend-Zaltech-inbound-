@@ -1,4 +1,4 @@
-import { Bell, Menu, Search } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useUIStore } from '../../store/uiStore';
 import { useState } from 'react';
@@ -14,38 +14,30 @@ export function Header({ title, actions }: HeaderProps) {
     const { toggleSidebar } = useUIStore();
     const [showNotifications, setShowNotifications] = useState(false);
 
+    const persistentNotifications = notifications.filter(n => !n.toastOnly);
+
     return (
         <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 lg:px-8 py-4 lg:py-5 flex items-center justify-between sticky top-0 z-20">
-            <div className="flex items-center gap-3 lg:gap-8 flex-1">
+            <div className="flex items-center gap-2 lg:gap-8 flex-1 min-w-0">
                 <button
                     onClick={toggleSidebar}
-                    className="lg:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                    className="lg:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg shrink-0 transition-colors"
                 >
                     <Menu className="w-6 h-6" />
                 </button>
-                <h1 className="text-xl lg:text-2xl font-bold text-gray-900 tracking-tight truncate w-auto shrink-0">{title}</h1>
-
-                {/* Universal Search Bar */}
-                <div className="hidden md:flex max-w-md w-full ml-8 relative group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-primary-start transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Search calls, leads, or dates..."
-                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-start/20 focus:border-primary-start transition-all outline-none text-sm"
-                    />
-                </div>
+                <h1 className="text-lg lg:text-2xl font-bold text-gray-900 tracking-tight truncate">{title}</h1>
             </div>
 
-            <div className="flex items-center gap-6">
-                {actions && <div className="flex items-center gap-3">{actions}</div>}
+            <div className="flex items-center gap-3 lg:gap-6 shrink-0 ml-4">
+                {actions && <div className="flex items-center">{actions}</div>}
 
-                <div className="h-6 w-px bg-gray-200"></div>
+                <div className="hidden sm:block h-6 w-px bg-gray-200"></div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <div className="relative">
                         <button
                             onClick={() => setShowNotifications(!showNotifications)}
-                            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-all relative"
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all relative"
                         >
                             <Bell className="w-5 h-5" />
                             {unreadCount > 0 && (
@@ -59,7 +51,7 @@ export function Header({ title, actions }: HeaderProps) {
                                     className="fixed inset-0 z-10"
                                     onClick={() => setShowNotifications(false)}
                                 ></div>
-                                <div className="absolute right-0 top-full mt-4 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                                <div className="absolute right-0 top-full mt-4 w-[calc(100vw-32px)] sm:w-96 max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-100 z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
                                     <div className="p-4 border-b border-gray-50 flex items-center justify-between">
                                         <h3 className="font-semibold text-gray-900">Notifications</h3>
                                         <button
@@ -70,13 +62,13 @@ export function Header({ title, actions }: HeaderProps) {
                                         </button>
                                     </div>
                                     <div className="max-h-[400px] overflow-auto">
-                                        {notifications.length === 0 ? (
+                                        {persistentNotifications.length === 0 ? (
                                             <div className="p-8 text-center text-gray-500 text-sm">
                                                 No notifications
                                             </div>
                                         ) : (
                                             <div className="divide-y divide-gray-50">
-                                                {notifications.map((notification) => (
+                                                {persistentNotifications.map((notification) => (
                                                     <div
                                                         key={notification.id}
                                                         className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-red-50/10' : ''}`}

@@ -5,9 +5,9 @@ import {
     LayoutDashboard,
     History,
     Users,
-    Box,
     LogOut,
     X,
+    Calendar,
     Settings as SettingsIcon
 } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -27,7 +27,7 @@ export function Sidebar() {
         { icon: LayoutDashboard, label: 'Overview', path: '/overview' },
         { icon: History, label: 'Live Stream', path: '/live-stream' },
         { icon: Users, label: 'Leads', path: '/leads' },
-        { icon: Box, label: 'Services', path: '/services' },
+        { icon: Calendar, label: 'Appointments', path: '/appointments' },
         { icon: SettingsIcon, label: 'Settings', path: '/settings' },
     ];
 

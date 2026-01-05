@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { useNotificationStore } from '../../store/notificationStore';
 import { Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export function SignIn() {
@@ -10,6 +11,7 @@ export function SignIn() {
     const [loading, setLoading] = useState(false);
 
     const login = useAuthStore((state) => state.login);
+    const addNotification = useNotificationStore((state) => state.addNotification);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -19,8 +21,14 @@ export function SignIn() {
         try {
             await login(email, password);
             navigate('/overview');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Login failed:', error);
+            addNotification({
+                title: 'Login Failed',
+                message: 'The email or password you entered is incorrect. Please try again.',
+                type: 'error',
+                toastOnly: true
+            });
         } finally {
             setLoading(false);
         }
@@ -102,11 +110,13 @@ export function SignIn() {
                                 />
                                 <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">Remember me</span>
                             </label>
-                            <button type="button" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                            <Link 
+                                to="/forgot-password" 
+                                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                            >
                                 Forgot password?
-                            </button>
+                            </Link>
                         </div>
-
                         <button
                             type="submit"
                             disabled={loading}
@@ -120,6 +130,15 @@ export function SignIn() {
                             )}
                         </button>
                     </form>
+
+                    <div className="mt-8 text-center">
+                        <p className="text-sm text-gray-500">
+                            Don't have an account?{' '}
+                            <Link to="/signup" className="font-semibold text-gray-900 hover:text-red-600 transition-colors">
+                                Sign up
+                            </Link>
+                        </p>
+                    </div>
                 </div>
 
                 <p className="text-center text-sm text-gray-400 mt-8">

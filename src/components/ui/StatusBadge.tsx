@@ -17,7 +17,10 @@ const statusConfig: Record<StatusBadgeType, { label: string; color: string }> = 
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-    const config = statusConfig[status];
+    const config = statusConfig[status] || { 
+        label: (status || 'Unknown').toString(), 
+        color: 'bg-gray-100 text-gray-500' 
+    };
 
     return (
         <span className={`inline-block px-3 py-1 rounded-full text-meta font-medium ${config.color}`}>

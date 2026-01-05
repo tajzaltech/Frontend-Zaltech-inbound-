@@ -1,49 +1,43 @@
-import { Phone, TrendingUp, Users, Clock } from 'lucide-react';
+import { Phone, Clock } from 'lucide-react';
+import type { DashboardStats } from '../../api/stats';
 
-export function StatsOverview() {
-    const stats = [
+interface StatsOverviewProps {
+    stats: DashboardStats | null;
+}
+
+export function StatsOverview({ stats }: StatsOverviewProps) {
+    const formatDuration = (seconds: number) => {
+        if (!seconds) return '0m 0s';
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}m ${secs}s`;
+    };
+
+    const items = [
         {
             label: 'Total Calls Today',
-            value: '128',
-            change: '+12%',
-            isPositive: true,
+            value: stats?.totalCallsToday.toString() || '0',
+            change: stats?.callsTrend || '',
+            isPositive: !stats?.callsTrend?.includes('-'),
             icon: Phone,
             color: 'text-red-600',
             bg: 'bg-red-50'
         },
         {
-            label: 'Active Agents',
-            value: '8',
-            change: 'Full Capacity',
-            isPositive: true,
-            icon: Users,
-            color: 'text-red-600',
-            bg: 'bg-red-50'
-        },
-        {
             label: 'Avg Duration',
-            value: '4m 32s',
-            change: '-8%',
-            isPositive: true, // shorter duration can be good
+            value: formatDuration(stats?.avgDurationSec || 0),
+            change: stats?.durationTrend || '',
+            isPositive: !stats?.durationTrend?.includes('+'), // shorter is usually better
             icon: Clock,
-            color: 'text-red-600',
-            bg: 'bg-red-50'
-        },
-        {
-            label: 'Customer Sentiment',
-            value: '4.8',
-            change: '+0.4',
-            isPositive: true,
-            icon: TrendingUp,
             color: 'text-red-600',
             bg: 'bg-red-50'
         }
     ];
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {stats.map((stat, index) => (
-                <div key={index} className="bg-white p-4 lg:p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {items.map((stat, index) => (
+                <div key={index} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
                     <div className="flex items-center justify-between mb-4">
                         <div className={`p-2 rounded-xl ${stat.bg}`}>
                             <stat.icon className={`w-5 h-5 ${stat.color}`} />

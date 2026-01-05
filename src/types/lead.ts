@@ -23,4 +23,5 @@ export interface AuditLogEntry {
     action: string;
     user: string;
     details: string;
+    type?: 'call' | 'ai' | 'status' | 'system' | 'appointment';
 }

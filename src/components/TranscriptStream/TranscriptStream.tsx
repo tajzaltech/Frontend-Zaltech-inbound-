@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { User, Bot } from 'lucide-react';
 import type { TranscriptItem } from '../../types/call';
-import { format } from 'date-fns';
 
 interface TranscriptStreamProps {
     transcript: TranscriptItem[];
@@ -43,12 +42,11 @@ export function TranscriptStream({ transcript }: TranscriptStreamProps) {
                                 <p className="text-body">{item.text}</p>
                             </div>
 
-                            <div className="text-meta text-gray-400 mt-1 px-1">
-                                {format(item.timestamp, 'HH:mm:ss')}
-                                {!item.isFinal && (
-                                    <span className="ml-2 text-blue-500">typing...</span>
-                                )}
-                            </div>
+                            {!item.isFinal && (
+                                <div className="text-meta text-blue-500 mt-1 px-1">
+                                    typing...
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
